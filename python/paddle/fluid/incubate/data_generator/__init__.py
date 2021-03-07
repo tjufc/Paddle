@@ -122,16 +122,20 @@ class DataGenerator(object):
                 mydata.run_from_stdin()
 
         '''
+        # 这是一个模版. 内部的多态方法全部返回iterator
         batch_samples = []
         for line in sys.stdin:
+            # 方法1: generate_sample处理原始数据
             line_iter = self.generate_sample(line)
             for user_parsed_line in line_iter():
                 if user_parsed_line == None:
                     continue
                 batch_samples.append(user_parsed_line)
                 if len(batch_samples) == self.batch_size_:
+                    # 方法2: generate_batch生成训练batch
                     batch_iter = self.generate_batch(batch_samples)
                     for sample in batch_iter():
+                        # 方法3: _gen_str输出训练数据
                         sys.stdout.write(self._gen_str(sample))
                     batch_samples = []
         if len(batch_samples) > 0:
